@@ -2,52 +2,159 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.*;
+import com.toedter.calendar.JDateChooser;
+import com.toedter.calendar.JCalendar;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class todo extends JFrame implements ActionListener{
 
     JPanel cardPanel;
     CardLayout layout;
-
+    private DefaultListModel<String> todoListModel;
+    private JList<String> todoList;
+    private JTextField TodoField,HidukeField,MemoField,amountField,dateField,contentField;
+    private JButton btnTodoHozon,btnKakeiboHozon,btnCalender,firstButton,secondButton,thirdButton;
+    private JPanel panel01,panel02,panel03,btnPanel;
+    private JScrollPane scrollPane;
+    private Container contentPane;
+    private JDateChooser dateChooser;
+   // private JDateChooser dateChooser;
     public static void main(String[] args) {
         todo frame = new todo();
         frame.setTitle("TodoKakeibo");
-        frame.setSize(400, 500);
+        frame.setSize(500, 500);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
         frame.setVisible(true);
+        
     }
 
-    public todo() {
-
+    todo() {
         // panel01
-        JPanel panel01 = new JPanel();
+        JPanel panel01 = new JPanel(new GridBagLayout());
         JButton btnTodoHozon = new JButton("保存");
-        panel01.add(btnTodoHozon);
+        JTextField TodoField = new JTextField(50);
+        List JuyouList = new List(5);
+        for (int i = 1; i <= 10; i++) {
+            JuyouList.add(String.valueOf(i));
+        }
+        JDateChooser datechooser1 = new JDateChooser();
+        GridBagConstraints gbc = new GridBagConstraints();
+        panel01.setSize(500,600);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.insets = new Insets(15, 15, 25, 15);
+        gbc.gridx=0;gbc.gridy=0;gbc.gridwidth=200;gbc.gridheight=100;
+        panel01.add(new JLabel("やること"),gbc);
+        gbc.gridx=200;gbc.gridy=0;gbc.gridwidth=300;gbc.gridheight=100;
+        panel01.add(TodoField,gbc);
 
+        gbc.gridx=0;gbc.gridy=100;gbc.gridwidth=200;gbc.gridheight=100;
+        panel01.add(new JLabel("重要度"),gbc);
+        gbc.gridx=200;gbc.gridy=100;gbc.gridwidth=300;gbc.gridheight=100;
+        panel01.add(JuyouList,gbc);
+        JuyouList.addActionListener(this);
+        
+
+        gbc.gridx=0;gbc.gridy=200;gbc.gridwidth=200;gbc.gridheight=100;
+        panel01.add(new JLabel("期限"),gbc);
+        gbc.gridx=200;gbc.gridy=200;gbc.gridwidth=300;gbc.gridheight=100;
+        panel01.add(datechooser1,gbc);
+
+       // btnTodoHozon.setPreferredSize(new Dimension(100, 50));
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0.5; 
+        btnTodoHozon.setBounds(0, 0, 100, 50);
+        gbc.gridx=0;gbc.gridy=300;gbc.gridwidth=500;gbc.gridheight=150;
+        panel01.add(btnTodoHozon,gbc);
+        
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
         // panel02
-        JPanel panel02 = new JPanel();
+        gbc.insets = new Insets(15, 15, 25, 15);
+        JPanel panel02 = new JPanel(new GridBagLayout());
+        panel02.setSize(500,600);
         JButton btnKakeiboHozon = new JButton("保存");
-        
         JTextField amountField = new JTextField(50);
-        JTextField dateField = new JTextField(50);
         JTextField contentField = new JTextField(50);
-        //setLayout(new FlowLayout());
-        
-        panel02.add(new JLabel("金額"));
-        panel02.add(amountField);
-        panel02.add(new JLabel("日付"));
-        panel02.add(dateField);
-        panel02.add(new JLabel("内容"));
-        panel02.add(contentField);
-        panel02.add(btnKakeiboHozon,BorderLayout.CENTER);
-        
+        JDateChooser datechooser = new JDateChooser();
+
+        //収入ボタン
+        gbc.anchor = GridBagConstraints.PAGE_START;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.gridx=0;gbc.gridy=0;gbc.gridwidth=1;gbc.gridheight=1;gbc.weightx =0.5;
+        JButton PlusButton = new JButton("収入");
+        PlusButton.setPreferredSize(new Dimension(100,50));
+        panel02.add(PlusButton,gbc);
+
+        //支出ボタン
+        gbc.gridx=1;gbc.gridy=0;gbc.gridwidth=1;gbc.gridheight=1;gbc.weightx =0.5; 
+        JButton MinusButton = new JButton("支出");
+        MinusButton.setPreferredSize(new Dimension(100,50));
+        panel02.add(MinusButton,gbc);
+
+        //金額
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridx=0;gbc.gridy=2;gbc.gridwidth=2;gbc.gridheight=1;
+        panel02.add(new JLabel("金額"),gbc);
+
+        gbc.gridx=1;gbc.gridy=2;gbc.gridwidth=2;gbc.gridheight=1;
+        panel02.add(amountField,gbc);
+
+        //内容
+        gbc.gridx=0;gbc.gridy=3;gbc.gridwidth=2;gbc.gridheight=1;
+        panel02.add(new JLabel("内容"),gbc);
+
+        gbc.gridx=1;gbc.gridy=3;gbc.gridwidth=2;gbc.gridheight=1;
+        panel02.add(contentField,gbc);
+
+        //日付
+        gbc.gridx=0;gbc.gridy=4;gbc.gridwidth=1;gbc.gridheight=1;
+        panel02.add(new JLabel("日付"),gbc);
+
+        gbc.gridx=1;gbc.gridy=4;gbc.gridwidth=1;gbc.gridheight=1;
+        panel02.add(datechooser,gbc);
+
+        //保存ボタン
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.gridx=0;gbc.gridy=5;gbc.gridwidth=2;gbc.gridheight=1;
+        btnKakeiboHozon.setPreferredSize(new Dimension(100,50));
+        panel02.add(btnKakeiboHozon,gbc);
 
         // panel03
-        JPanel panel03 = new JPanel();
+        JPanel panel03 = new JPanel(new GridBagLayout());
+        List YarukotoList = new List();
+        List KakeiboList = new List();
+        JCalendar calendar = new JCalendar();
+        gbc.insets = new Insets(10, 10, 5, 10);
+        panel03.setSize(500,600);
         panel03.setBackground(Color.LIGHT_GRAY);
-        JButton btnCalender = new JButton("third");
-        panel03.add(btnCalender);
+
+        //Calendarの設置
+        gbc.weightx=1;gbc.weighty=1;
+        gbc.gridx=0;gbc.gridy=0;gbc.gridwidth=100;gbc.gridheight=60;
+        calendar.setPreferredSize(new Dimension(450,180));
+        panel03.add(calendar,gbc);
+
+        //やることリストと家計簿の追加
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridx=0;gbc.gridy=60;gbc.gridwidth=50;gbc.gridheight=5;
+        panel03.add(new JLabel("やること一覧"),gbc);
+        gbc.gridx=50;
+        panel03.add(new JLabel("今日の収支"),gbc);
+
+        gbc.insets = new Insets(0, 0, 0, 0);
+        gbc.gridx=0;gbc.gridy=65;gbc.gridwidth=50;gbc.gridheight=30;
+        YarukotoList.setPreferredSize(new Dimension(400,150));
+        panel03.add(YarukotoList,gbc);
+        gbc.gridx=50;
+        KakeiboList.setPreferredSize(new Dimension(400,150));
+        panel03.add(KakeiboList,gbc);
+
 
         // CardLayout用パネル
         cardPanel = new JPanel();
@@ -82,10 +189,14 @@ public class todo extends JFrame implements ActionListener{
         contentPane.add(cardPanel, BorderLayout.CENTER);
         contentPane.add(btnPanel, BorderLayout.PAGE_END);
     }
+    
 
     public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
-
         layout.show(cardPanel, cmd);
+
+        if(e.getSource() == btnTodoHozon){
+            
+        }
     }
 }
